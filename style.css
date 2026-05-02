@@ -1,245 +1,470 @@
+/* =====================================================================
+   CYBERPUNK HUD — WAYBAR THEME  v2
+   Hybrid SVG+CSS approach:
+     SVG  → structural geometry (frames, brackets, separators, tabs)
+     CSS  → glow, states, hover transitions, animations, layout
+   ===================================================================== */
 @import "../omarchy/current/theme/waybar.css";
 
-@define-color base-bg rgba(20, 16, 16, 0.85);
-@define-color fg #dacbe6;
-@define-color focus-blue #1d52a1;
-@define-color active-yellow #ffff00;
-@define-color heat-orange #ff6600;
-@define-color neon-purple #9d00ff;
-@define-color punk-red #ff0055;
-@define-color active-bg rgba(255, 255, 0, 0.15);
-@define-color focus-bg rgba(29, 82, 161, 0.4);
+/* =====================================================================
+   COLOR SYSTEM
+   ===================================================================== */
+@define-color base-bg        rgba(10, 10, 12, 0.93);
+@define-color base-bg-solid  #0a0a0c;
+@define-color hud-magenta    #bf00ff;   /* Core Identity — Clock only     */
+@define-color hud-cyan       #00f0ff;   /* Live Data / Navigation         */
+@define-color hud-blue       #0055ff;   /* Structural accents             */
+@define-color hud-green      #39ff14;   /* Optimal state                  */
+@define-color hud-yellow     #ccff00;   /* Warnings                       */
+@define-color hud-red        #ff003c;   /* Critical / Urgent              */
+@define-color fg-bright      #ffffff;
+@define-color fg-dim         rgba(218, 203, 230, 0.55);
+@define-color fg-dimmer      rgba(218, 203, 230, 0.28);
 
-* {
-  font-family: 'JetBrainsMono Nerd Font Propo';
+/* =====================================================================
+   ANIMATIONS  (GTK-safe: opacity, color, box-shadow, background only)
+   ===================================================================== */
+
+/* Clock breathing pulse */
+@keyframes hud-pulse {
+  0%   { text-shadow: 0 0 4px @hud-magenta; box-shadow: inset 0 -1px 5px rgba(191,0,255,0.18); }
+  50%  { text-shadow: 0 0 14px @hud-magenta; box-shadow: inset 0 -2px 18px rgba(191,0,255,0.42); }
+  100% { text-shadow: 0 0 4px @hud-magenta; box-shadow: inset 0 -1px 5px rgba(191,0,255,0.18); }
+}
+
+/* Hover glitch — subtle color/opacity flicker */
+@keyframes hud-hover-glitch {
+  0%   { opacity: 1.0; }
+  15%  { opacity: 0.75; }
+  16%  { opacity: 1.0; }
+  45%  { opacity: 1.0; }
+  46%  { opacity: 0.6; }
+  47%  { opacity: 1.0; }
+  75%  { opacity: 1.0; }
+  76%  { opacity: 0.85; }
+  100% { opacity: 1.0; }
+}
+
+/* Urgent workspace strobe */
+@keyframes hud-glitch-urgent {
+  0%   { color: @hud-red;     opacity: 1.0; }
+  88%  { color: @hud-red;     opacity: 1.0; }
+  90%  { color: @hud-cyan;    opacity: 0.65; }
+  92%  { color: @hud-magenta; opacity: 1.0; }
+  94%  { color: @hud-red;     opacity: 0.45; }
+  97%  { color: @hud-cyan;    opacity: 0.85; }
+  100% { color: @hud-red;     opacity: 1.0; }
+}
+
+/* Critical alarm pulse */
+@keyframes hud-alarm {
+  0%   { background-color: transparent; color: @hud-red; box-shadow: inset 0 -2px 0 @hud-red; }
+  50%  { background-color: rgba(255,0,60,0.14); color: @fg-bright; box-shadow: inset 0 -2px 12px @hud-red; }
+  100% { background-color: transparent; color: @hud-red; box-shadow: inset 0 -2px 0 @hud-red; }
+}
+
+/* Telemetry scan-line sweep on hover */
+@keyframes hud-scan {
+  0%   { background-color: rgba(0,240,255,0.00); }
+  30%  { background-color: rgba(0,240,255,0.06); }
+  60%  { background-color: rgba(0,240,255,0.03); }
+  100% { background-color: rgba(0,240,255,0.06); }
+}
+
+/* =====================================================================
+   GLOBAL RESET — kills Omarchy grey-block cascade via specificity
+   ===================================================================== */
+window#waybar * {
+  font-family: 'JetBrainsMono Nerd Font Propo', 'JetBrains Mono', monospace;
   font-size: 13px;
   font-weight: bold;
   border: none;
   border-radius: 0;
   min-height: 0;
-  text-shadow: 0px 0px 5px rgba(218, 203, 230, 0.3);
+  text-shadow: 0 0 3px rgba(0, 240, 255, 0.32);
 }
 
+window#waybar #tray,
+window#waybar #window,
+window#waybar #cpu,
+window#waybar #memory,
+window#waybar #battery,
+window#waybar #network,
+window#waybar #temperature,
+window#waybar #bluetooth,
+window#waybar #pulseaudio,
+window#waybar #custom-omarchy,
+window#waybar #custom-update,
+window#waybar #custom-updatespacman,
+window#waybar #custom-cava,
+window#waybar #custom-calendar,
+window#waybar #custom-netspeed,
+window#waybar #custom-gpu,
+window#waybar #clock,
+window#waybar #tray-expander,
+window#waybar #disk,
+window#waybar #idle_inhibitor,
+window#waybar #mpris {
+  background-color: transparent;
+  border-bottom: 2px solid transparent;
+  color: @hud-cyan;
+  margin: 0;
+}
+
+/* =====================================================================
+   BAR ROOT
+   ===================================================================== */
+window#waybar {
+  background-color: transparent;
+  margin: 5px 10px;
+}
+
+window#waybar.hidden { opacity: 0.2; }
+
+/* =====================================================================
+   TOOLTIPS — clean angular, cyan or magenta framed
+   ===================================================================== */
 tooltip {
-  background: @base-bg;
-  border: 1px solid @neon-purple;
+  background: @base-bg-solid;
+  border: 1px solid @hud-cyan;
   border-radius: 0;
-  box-shadow: 0px 0px 10px rgba(157, 0, 255, 0.5);
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.22), inset 0 0 6px rgba(0,240,255,0.04);
+  padding: 0;
 }
 
 tooltip label {
-  color: @fg;
-  padding: 5px;
+  color: @fg-bright;
+  padding: 6px 14px;
+  text-shadow: none;
+  font-size: 12px;
+  font-weight: normal;
 }
 
-window#waybar {
-  background-color: transparent;
-  transition-property: background-color;
-  transition-duration: .5s;
-  margin: 10px;
-}
-
-window#waybar.hidden {
-  opacity: 0.2;
-}
-
+/* =====================================================================
+   ZONES
+   Three distinct dark panels separated by wider gaps.
+   SVG circuit traces mark zone boundaries.
+   ===================================================================== */
 .modules-left,
 .modules-center,
 .modules-right {
-  background: transparent;
-  margin: 5px;
+  background-color: @base-bg;
+  margin: 2px 0;
 }
 
+/* LEFT — right-edge circuit trace separator (SVG) */
+.modules-left {
+  padding: 0 22px 0 6px;
+  margin-right: 24px;
+  /* CSS inset glow + right-edge line */
+  box-shadow: inset 0 0 8px rgba(0,85,255,0.10), 1px 0 0 rgba(0,85,255,0.35);
+  /* SVG: double-line circuit trace on right */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='30'%3E%3Cline x1='10' y1='4' x2='10' y2='26' stroke='%230055ff' stroke-width='1' stroke-opacity='0.7'/%3E%3Cline x1='7' y1='8' x2='7' y2='22' stroke='%230055ff' stroke-width='0.5' stroke-opacity='0.4'/%3E%3Ccircle cx='10' cy='4' r='1.2' fill='%2300f0ff' fill-opacity='0.6'/%3E%3Ccircle cx='10' cy='26' r='1.2' fill='%2300f0ff' fill-opacity='0.6'/%3E%3C/svg%3E");
+  background-position: right center;
+  background-repeat: no-repeat;
+  background-size: 12px 30px;
+}
+
+/* CENTER — magenta glow framing */
+.modules-center {
+  padding: 0 10px;
+  box-shadow:
+    0 0 22px rgba(191,0,255,0.22),
+    inset 0 0 14px rgba(191,0,255,0.09);
+  /* SVG: thin top+bottom magenta accent lines */
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='30'%3E%3Cline x1='0' y1='1' x2='100%25' y2='1' stroke='%23bf00ff' stroke-width='0.75' stroke-opacity='0.35'/%3E%3Cline x1='0' y1='29' x2='100%25' y2='29' stroke='%23bf00ff' stroke-width='0.75' stroke-opacity='0.35'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+/* RIGHT — left-edge circuit trace separator (SVG) */
+.modules-right {
+  padding: 0 6px 0 22px;
+  margin-left: 24px;
+  box-shadow: inset 0 0 8px rgba(0,85,255,0.10), -1px 0 0 rgba(0,85,255,0.35);
+  /* SVG: mirror of left zone trace */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='30'%3E%3Cline x1='2' y1='4' x2='2' y2='26' stroke='%230055ff' stroke-width='1' stroke-opacity='0.7'/%3E%3Cline x1='5' y1='8' x2='5' y2='22' stroke='%230055ff' stroke-width='0.5' stroke-opacity='0.4'/%3E%3Ccircle cx='2' cy='4' r='1.2' fill='%2300f0ff' fill-opacity='0.6'/%3E%3Ccircle cx='2' cy='26' r='1.2' fill='%2300f0ff' fill-opacity='0.6'/%3E%3C/svg%3E");
+  background-position: left center;
+  background-repeat: no-repeat;
+  background-size: 12px 30px;
+}
+
+/* =====================================================================
+   LEFT ZONE — Navigation & Control
+   ===================================================================== */
+
+/* Omarchy logo — SVG angular-bracket frame */
+window#waybar #custom-omarchy {
+  color: @hud-cyan;
+  padding: 0 12px;
+  font-size: 15px;
+  text-shadow: 0 0 10px @hud-cyan;
+  transition: text-shadow 0.2s ease, opacity 0.2s ease;
+  /* SVG: left + right angle marks */
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='20'%3E%3Cpolyline points='5,2 1,10 5,18' fill='none' stroke='%2300f0ff' stroke-width='1.2' stroke-opacity='0.7'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='20'%3E%3Cpolyline points='1,2 5,10 1,18' fill='none' stroke='%2300f0ff' stroke-width='1.2' stroke-opacity='0.7'/%3E%3C/svg%3E");
+  background-position: left center, right center;
+  background-repeat: no-repeat, no-repeat;
+  background-size: 6px 20px, 6px 20px;
+}
+
+window#waybar #custom-omarchy:hover {
+  text-shadow: 0 0 18px @hud-cyan;
+  animation: hud-hover-glitch 0.4s steps(1) 1;
+}
+
+/* Cava audio bars — green neon */
+window#waybar #custom-cava {
+  color: @hud-green;
+  padding: 0 8px;
+  text-shadow: 0 0 5px @hud-green;
+  letter-spacing: 0;
+}
+
+/* Workspaces container */
 #workspaces {
-  background-color: @base-bg;
-  margin: 2px 4px;
-  padding: 0 5px;
-  border-left: 2px solid @focus-blue;
-  border-right: 2px solid @focus-blue;
-  box-shadow: 0px 0px 10px rgba(29, 82, 161, 0.2);
-}
-
-#workspaces button {
-  color: @fg;
+  margin: 0;
+  padding: 0 3px;
   background-color: transparent;
-  margin: 4px 2px;
-  padding: 0 5px;
+  border: none;
+  box-shadow: none;
+}
+
+/* Workspace button — base: parallelogram SVG tab + dim text */
+#workspaces button {
+  color: @fg-dim;
+  background-color: transparent;
+  margin: 3px 1px;
+  padding: 0 8px;
+  min-width: 22px;
   border-bottom: 2px solid transparent;
-  transition: all 0.3s ease;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  transition: color 0.15s ease, border-bottom 0.15s ease, opacity 0.15s ease;
+  text-shadow: none;
+  /* SVG: skewed tab (parallelogram) */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 20' preserveAspectRatio='none'%3E%3Cpolygon points='4,19 1,19 5,1 23,1 20,19' fill='rgba(0,85,255,0.07)' stroke='rgba(0,85,255,0.2)' stroke-width='0.5'/%3E%3C/svg%3E");
+  background-size: 100% 100%;
 }
 
+/* Hover — cyan tab fill + subtle border */
 #workspaces button:hover {
-  background-color: @focus-bg;
-  border-bottom: 2px solid @focus-blue;
-  color: @fg;
+  color: @hud-cyan;
+  border-bottom: 2px solid @hud-blue;
+  animation: hud-hover-glitch 0.35s steps(1) 1;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 20' preserveAspectRatio='none'%3E%3Cpolygon points='4,19 1,19 5,1 23,1 20,19' fill='rgba(0,240,255,0.10)' stroke='rgba(0,240,255,0.35)' stroke-width='0.6'/%3E%3C/svg%3E");
 }
 
+/* Active — bright cyan, filled SVG tab + glow */
 #workspaces button.active {
-  background-color: @active-bg;
-  border-bottom: 2px solid @active-yellow;
-  color: @active-yellow;
+  color: @hud-cyan;
+  border-bottom: 2px solid @hud-cyan;
   min-width: 30px;
-  text-shadow: 0px 0px 8px @active-yellow;
+  text-shadow: 0 0 7px @hud-cyan;
+  box-shadow: 0 3px 10px rgba(0,240,255,0.14);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 20' preserveAspectRatio='none'%3E%3Cpolygon points='4,19 1,19 5,1 23,1 20,19' fill='rgba(0,240,255,0.18)' stroke='%2300f0ff' stroke-width='0.8'/%3E%3Cline x1='5' y1='1' x2='14' y2='1' stroke='%2300f0ff' stroke-width='1.5' stroke-opacity='0.7'/%3E%3C/svg%3E");
 }
 
+/* Urgent — red glitch strobe */
 #workspaces button.urgent {
-  color: @base-bg;
-  background-color: @punk-red;
-  border-bottom: 2px solid @active-yellow;
-  box-shadow: 0px 0px 15px @punk-red;
+  color: @hud-red;
+  border-bottom: 2px solid @hud-red;
+  animation: hud-glitch-urgent 2.8s infinite steps(1);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 20' preserveAspectRatio='none'%3E%3Cpolygon points='4,19 1,19 5,1 23,1 20,19' fill='rgba(255,0,60,0.14)' stroke='%23ff003c' stroke-width='0.7'/%3E%3C/svg%3E");
 }
 
+/* Empty — nearly invisible */
 #workspaces button.empty {
-  color: rgba(218, 203, 230, 0.5);
+  color: @fg-dimmer;
+  opacity: 0.6;
+  background-image: none;
 }
 
-#tray,
-#window,
-#cava,
-#mpris,
-#cpu,
-#memory,
-#battery,
-#network,
-#temperature,
-#bluetooth,
-#pulseaudio,
-#custom-omarchy,
-#custom-weather,
-#custom-update,
-#custom-updatespacman,
-#custom-cava,
-#custom-calendar,
-#custom-netspeed,
-#custom-gpu,
-#clock,
-#tray-expander,
-#disk,
-#idle_inhibitor {
-  background-color: @base-bg;
-  color: @fg;
-  margin: 2px;
-  padding: 2px 15px;
-  border-bottom: 2px solid @neon-purple;
-}
-
-#custom-omarchy {
-  color: @active-yellow;
+/* Active window title */
+window#waybar #window {
+  color: @fg-bright;
   padding: 0 12px;
-  font-size: 14px;
-  border-bottom: 2px solid @active-yellow;
-  text-shadow: 0px 0px 10px @active-yellow;
+  border-bottom: 2px solid transparent;
+  text-shadow: 0 0 4px rgba(255,255,255,0.18);
+  /* SVG: subtle underline dash */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='30'%3E%3Cline x1='8' y1='28' x2='92%25' y2='28' stroke='%230055ff' stroke-width='0.5' stroke-opacity='0.35' stroke-dasharray='3 4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
 }
 
-#window {
-  margin: 2px 4px;
-  border-bottom: 2px solid @focus-blue;
-}
+/* =====================================================================
+   CENTER ZONE — Clock core + Update indicators + mpris hint
+   The center has 3 sub-elements: [update] [clock] [update]
+   Clock is the dominant anchor; everything else defers to it.
+   ===================================================================== */
 
-#clock {
+/* CLOCK — primary visual anchor */
+window#waybar #clock {
+  color: @hud-magenta;
+  font-size: 15px;
   font-weight: 900;
-  border-bottom: 2px solid @focus-blue;
-  color: @focus-blue;
-  text-shadow: 0px 0px 10px @focus-blue;
+  padding: 0 22px;
+  margin: 0 2px;
+  text-shadow: 0 0 7px @hud-magenta;
+  border-bottom: none;
+  animation: hud-pulse 4.5s ease-in-out infinite alternate;
+  /* SVG: angular bracket + corner cuts framing the clock */
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='30'%3E%3C!-- left bracket --%3E%3Cpolyline points='15,3 4,3 4,27 15,27' fill='none' stroke='%23bf00ff' stroke-width='1.5' stroke-opacity='0.85'/%3E%3C!-- corner accent --%3E%3Cline x1='4' y1='3' x2='4' y2='8' stroke='%2300f0ff' stroke-width='1' stroke-opacity='0.6'/%3E%3Cline x1='4' y1='27' x2='4' y2='22' stroke='%2300f0ff' stroke-width='1' stroke-opacity='0.6'/%3E%3Ccircle cx='4' cy='3' r='1.5' fill='%23bf00ff' fill-opacity='0.9'/%3E%3Ccircle cx='4' cy='27' r='1.5' fill='%23bf00ff' fill-opacity='0.9'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='30'%3E%3C!-- right bracket --%3E%3Cpolyline points='1,3 12,3 12,27 1,27' fill='none' stroke='%23bf00ff' stroke-width='1.5' stroke-opacity='0.85'/%3E%3Cline x1='12' y1='3' x2='12' y2='8' stroke='%2300f0ff' stroke-width='1' stroke-opacity='0.6'/%3E%3Cline x1='12' y1='27' x2='12' y2='22' stroke='%2300f0ff' stroke-width='1' stroke-opacity='0.6'/%3E%3Ccircle cx='12' cy='3' r='1.5' fill='%23bf00ff' fill-opacity='0.9'/%3E%3Ccircle cx='12' cy='27' r='1.5' fill='%23bf00ff' fill-opacity='0.9'/%3E%3C/svg%3E");
+  background-position: left center, right center;
+  background-repeat: no-repeat, no-repeat;
+  background-size: 16px 30px, 16px 30px;
 }
 
-#custom-update,
-#custom-updatespacman {
-  color: @active-yellow;
-  border-bottom: 2px solid @active-yellow;
+/* Update indicators — yellow, center-flanking the clock */
+window#waybar #custom-update,
+window#waybar #custom-updatespacman {
+  color: @hud-yellow;
+  padding: 0 9px;
+  border-bottom: 2px solid transparent;
+  text-shadow: 0 0 5px rgba(204,255,0,0.45);
+  transition: border-bottom 0.2s ease, text-shadow 0.2s ease, opacity 0.2s ease;
 }
 
-#custom-cava {
-  color: @heat-orange;
-  padding: 0 12px;
-  border-bottom: 2px solid @heat-orange;
-  text-shadow: 0px 0px 10px @heat-orange;
+window#waybar #custom-update:hover,
+window#waybar #custom-updatespacman:hover {
+  border-bottom: 2px solid @hud-yellow;
+  text-shadow: 0 0 12px @hud-yellow;
+  animation: hud-hover-glitch 0.4s steps(1) 1;
 }
 
-#tray-expander {
-  padding: 0 5px;
+/* =====================================================================
+   RIGHT ZONE — Telemetry & Alerts
+   SVG micro-frames on each module. CSS handles all state changes.
+   ===================================================================== */
+
+/* Base telemetry style */
+window#waybar #tray,
+window#waybar #cpu,
+window#waybar #memory,
+window#waybar #battery,
+window#waybar #network,
+window#waybar #temperature,
+window#waybar #bluetooth,
+window#waybar #pulseaudio,
+window#waybar #custom-weather,
+window#waybar #custom-calendar,
+window#waybar #custom-netspeed,
+window#waybar #custom-gpu,
+window#waybar #disk,
+window#waybar #idle_inhibitor {
+  color: @hud-cyan;
+  padding: 0 9px;
+  margin: 2px 0;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s ease, border-bottom 0.15s ease, opacity 0.15s ease;
+}
+
+/* SVG angular-bracket micro-frame on individual telemetry modules */
+window#waybar #cpu,
+window#waybar #memory,
+window#waybar #battery,
+window#waybar #pulseaudio,
+window#waybar #network {
+  /* SVG: thin left cut-corner accent */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='30'%3E%3Cpolyline points='3,2 0,2 0,28 3,28' fill='none' stroke='%2300f0ff' stroke-width='0.6' stroke-opacity='0.25'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+window#waybar #tray-expander {
+  color: @fg-dim;
+  padding: 0 3px;
 }
 
 #custom-expand-icon {
-  color: @fg;
-  margin-left: 8px;
+  color: @fg-dim;
+  padding-right: 4px;
 }
 
-#cpu:hover,
-#memory:hover,
-#temperature:hover,
-#bluetooth:hover,
-#network:hover,
-#pulseaudio:hover,
-#battery:hover,
-#clock:hover,
-#custom-weather:hover,
-#custom-calendar:hover,
-#custom-netspeed:hover,
-#custom-gpu:hover,
-#disk:hover,
-#idle_inhibitor:hover {
-  background-color: @focus-bg;
-  color: @active-yellow;
-  border-bottom: 2px solid @active-yellow;
-  box-shadow: 0px 4px 10px rgba(255, 255, 0, 0.3);
+/* HOVER — scan-line sweep + glitch flicker */
+window#waybar #cpu:hover,
+window#waybar #memory:hover,
+window#waybar #temperature:hover,
+window#waybar #bluetooth:hover,
+window#waybar #network:hover,
+window#waybar #pulseaudio:hover,
+window#waybar #battery:hover,
+window#waybar #custom-weather:hover,
+window#waybar #custom-calendar:hover,
+window#waybar #custom-netspeed:hover,
+window#waybar #custom-gpu:hover,
+window#waybar #disk:hover,
+window#waybar #idle_inhibitor:hover {
+  color: @fg-bright;
+  border-bottom: 2px solid @hud-cyan;
+  box-shadow: inset 0 -2px 8px rgba(0,240,255,0.2);
+  animation: hud-scan 0.5s ease-out 1 forwards, hud-hover-glitch 0.45s steps(1) 1;
 }
 
-#battery.charging,
-#battery.plugged {
-  color: @active-yellow;
-  border-bottom: 2px solid @active-yellow;
+/* Audio muted */
+window#waybar #pulseaudio.muted {
+  color: @fg-dim;
+  text-shadow: none;
+  opacity: 0.7;
 }
 
-#battery.critical:not(.charging) {
-  background-color: @punk-red;
-  color: @active-yellow;
-  border-bottom: 2px solid @active-yellow;
-  animation-name: alarm;
-  animation-duration: 0.5s;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-  animation-direction: alternate;
+/* =====================================================================
+   SEMANTIC STATES
+   ===================================================================== */
+
+/* WARNING — Acid Yellow, dashed underline */
+window#waybar #battery.warning,
+window#waybar #disk.warning,
+window#waybar #temperature.warning,
+window#waybar #cpu.warning,
+window#waybar #memory.warning {
+  color: @hud-yellow;
+  border-bottom: 2px dashed @hud-yellow;
+  text-shadow: 0 0 7px @hud-yellow;
 }
 
-#disk.warning,
-#temperature.warning,
-#cpu.warning,
-#memory.warning {
-  color: @heat-orange;
-  border-bottom: 2px solid @heat-orange;
+/* CRITICAL — Threat Red + alarm pulse */
+window#waybar #battery.critical:not(.charging),
+window#waybar #disk.critical,
+window#waybar #temperature.critical,
+window#waybar #cpu.critical,
+window#waybar #memory.critical {
+  color: @hud-red;
+  border-bottom: 2px solid @hud-red;
+  font-weight: 900;
+  text-shadow: 0 0 8px @hud-red;
+  animation: hud-alarm 0.9s ease-in-out infinite alternate;
 }
 
-#disk.critical,
-#temperature.critical,
-#cpu.critical,
-#memory.critical {
-  color: @active-yellow;
-  background-color: rgba(255, 0, 85, 0.3);
-  border-bottom: 2px solid @punk-red;
-  animation-name: alarm;
-  animation-duration: 0.5s;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-  animation-direction: alternate;
+/* CHARGING — Toxic Green */
+window#waybar #battery.charging,
+window#waybar #battery.plugged {
+  color: @hud-green;
+  border-bottom: 2px solid @hud-green;
+  text-shadow: 0 0 7px @hud-green;
 }
 
-#mpris {
-  min-width: 200px;
-  border-bottom: 2px solid @focus-blue;
+/* =====================================================================
+   MPRIS (Media player)
+   ===================================================================== */
+window#waybar #mpris {
+  color: @hud-cyan;
+  padding: 0 12px;
+  border-bottom: 2px solid transparent;
+  min-width: 130px;
+  transition: border-bottom 0.15s ease, opacity 0.15s ease;
+  /* SVG: subtle music-note-width underline dash */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='30'%3E%3Cline x1='0' y1='29' x2='100%25' y2='29' stroke='%2300f0ff' stroke-width='0.5' stroke-opacity='0.2' stroke-dasharray='5 6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
 }
 
-#mpris:hover {
-  background-color: @focus-bg;
-  color: @active-yellow;
-  border-bottom: 2px solid @active-yellow;
-}
-
-@keyframes alarm {
-  to {
-    background-color: rgba(255, 255, 0, 0.2);
-    color: @punk-red;
-    border-bottom: 2px solid @punk-red;
-    box-shadow: 0px 0px 15px @punk-red;
-  }
+window#waybar #mpris:hover {
+  border-bottom: 2px solid @hud-cyan;
+  animation: hud-hover-glitch 0.4s steps(1) 1;
 }
