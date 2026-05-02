@@ -1,0 +1,21 @@
+{
+  "modules-left": [
+    "custom/omarchy",
+    "custom/cava",
+    "hyprland/workspaces",
+    "hyprland/window"
+  ],
+  "modules-center": [
+    "clock",
+    "custom/updatespacman",
+    "custom/update"
+  ],
+  "modules-right": [
+    "group/tray-expander",
+    "network",
+    "custom/gpu",
+    "cpu",
+    "pulseaudio",
+    "battery"
+  ]
+}

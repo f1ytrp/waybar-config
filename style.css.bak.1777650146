@@ -1,0 +1,245 @@
+@import "../omarchy/current/theme/waybar.css";
+
+@define-color base-bg rgba(20, 16, 16, 0.85);
+@define-color fg #dacbe6;
+@define-color focus-blue #1d52a1;
+@define-color active-yellow #ffff00;
+@define-color heat-orange #ff6600;
+@define-color neon-purple #9d00ff;
+@define-color punk-red #ff0055;
+@define-color active-bg rgba(255, 255, 0, 0.15);
+@define-color focus-bg rgba(29, 82, 161, 0.4);
+
+* {
+  font-family: 'JetBrainsMono Nerd Font Propo';
+  font-size: 13px;
+  font-weight: bold;
+  border: none;
+  border-radius: 0;
+  min-height: 0;
+  text-shadow: 0px 0px 5px rgba(218, 203, 230, 0.3);
+}
+
+tooltip {
+  background: @base-bg;
+  border: 1px solid @neon-purple;
+  border-radius: 0;
+  box-shadow: 0px 0px 10px rgba(157, 0, 255, 0.5);
+}
+
+tooltip label {
+  color: @fg;
+  padding: 5px;
+}
+
+window#waybar {
+  background-color: transparent;
+  transition-property: background-color;
+  transition-duration: .5s;
+  margin: 10px;
+}
+
+window#waybar.hidden {
+  opacity: 0.2;
+}
+
+.modules-left,
+.modules-center,
+.modules-right {
+  background: transparent;
+  margin: 5px;
+}
+
+#workspaces {
+  background-color: @base-bg;
+  margin: 2px 4px;
+  padding: 0 5px;
+  border-left: 2px solid @focus-blue;
+  border-right: 2px solid @focus-blue;
+  box-shadow: 0px 0px 10px rgba(29, 82, 161, 0.2);
+}
+
+#workspaces button {
+  color: @fg;
+  background-color: transparent;
+  margin: 4px 2px;
+  padding: 0 5px;
+  border-bottom: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+#workspaces button:hover {
+  background-color: @focus-bg;
+  border-bottom: 2px solid @focus-blue;
+  color: @fg;
+}
+
+#workspaces button.active {
+  background-color: @active-bg;
+  border-bottom: 2px solid @active-yellow;
+  color: @active-yellow;
+  min-width: 30px;
+  text-shadow: 0px 0px 8px @active-yellow;
+}
+
+#workspaces button.urgent {
+  color: @base-bg;
+  background-color: @punk-red;
+  border-bottom: 2px solid @active-yellow;
+  box-shadow: 0px 0px 15px @punk-red;
+}
+
+#workspaces button.empty {
+  color: rgba(218, 203, 230, 0.5);
+}
+
+#tray,
+#window,
+#cava,
+#mpris,
+#cpu,
+#memory,
+#battery,
+#network,
+#temperature,
+#bluetooth,
+#pulseaudio,
+#custom-omarchy,
+#custom-weather,
+#custom-update,
+#custom-updatespacman,
+#custom-cava,
+#custom-calendar,
+#custom-netspeed,
+#custom-gpu,
+#clock,
+#tray-expander,
+#disk,
+#idle_inhibitor {
+  background-color: @base-bg;
+  color: @fg;
+  margin: 2px;
+  padding: 2px 15px;
+  border-bottom: 2px solid @neon-purple;
+}
+
+#custom-omarchy {
+  color: @active-yellow;
+  padding: 0 12px;
+  font-size: 14px;
+  border-bottom: 2px solid @active-yellow;
+  text-shadow: 0px 0px 10px @active-yellow;
+}
+
+#window {
+  margin: 2px 4px;
+  border-bottom: 2px solid @focus-blue;
+}
+
+#clock {
+  font-weight: 900;
+  border-bottom: 2px solid @focus-blue;
+  color: @focus-blue;
+  text-shadow: 0px 0px 10px @focus-blue;
+}
+
+#custom-update,
+#custom-updatespacman {
+  color: @active-yellow;
+  border-bottom: 2px solid @active-yellow;
+}
+
+#custom-cava {
+  color: @heat-orange;
+  padding: 0 12px;
+  border-bottom: 2px solid @heat-orange;
+  text-shadow: 0px 0px 10px @heat-orange;
+}
+
+#tray-expander {
+  padding: 0 5px;
+}
+
+#custom-expand-icon {
+  color: @fg;
+  margin-left: 8px;
+}
+
+#cpu:hover,
+#memory:hover,
+#temperature:hover,
+#bluetooth:hover,
+#network:hover,
+#pulseaudio:hover,
+#battery:hover,
+#clock:hover,
+#custom-weather:hover,
+#custom-calendar:hover,
+#custom-netspeed:hover,
+#custom-gpu:hover,
+#disk:hover,
+#idle_inhibitor:hover {
+  background-color: @focus-bg;
+  color: @active-yellow;
+  border-bottom: 2px solid @active-yellow;
+  box-shadow: 0px 4px 10px rgba(255, 255, 0, 0.3);
+}
+
+#battery.charging,
+#battery.plugged {
+  color: @active-yellow;
+  border-bottom: 2px solid @active-yellow;
+}
+
+#battery.critical:not(.charging) {
+  background-color: @punk-red;
+  color: @active-yellow;
+  border-bottom: 2px solid @active-yellow;
+  animation-name: alarm;
+  animation-duration: 0.5s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+
+#disk.warning,
+#temperature.warning,
+#cpu.warning,
+#memory.warning {
+  color: @heat-orange;
+  border-bottom: 2px solid @heat-orange;
+}
+
+#disk.critical,
+#temperature.critical,
+#cpu.critical,
+#memory.critical {
+  color: @active-yellow;
+  background-color: rgba(255, 0, 85, 0.3);
+  border-bottom: 2px solid @punk-red;
+  animation-name: alarm;
+  animation-duration: 0.5s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+
+#mpris {
+  min-width: 200px;
+  border-bottom: 2px solid @focus-blue;
+}
+
+#mpris:hover {
+  background-color: @focus-bg;
+  color: @active-yellow;
+  border-bottom: 2px solid @active-yellow;
+}
+
+@keyframes alarm {
+  to {
+    background-color: rgba(255, 255, 0, 0.2);
+    color: @punk-red;
+    border-bottom: 2px solid @punk-red;
+    box-shadow: 0px 0px 15px @punk-red;
+  }
+}

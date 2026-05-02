@@ -1,0 +1,143 @@
+@import "../omarchy/current/theme/waybar.css";
+
+* {
+  border: none;
+  border-radius: 0;
+  min-height: 0;
+  font-family: 'JetBrainsMono Nerd Font';
+  font-size: 13px;
+  font-weight: bold;
+}
+
+window#waybar {
+  background-color: transparent;
+  transition-property: background-color;
+  transition-duration: .5s;
+}
+
+#workspaces {
+    padding: 0 10px;
+    margin: 5px 3px;
+    border-radius: 12px;
+    background-color: @background;
+    border: 1px solid @color1; /* Neon Orange-ish */
+    box-shadow: 0 0 5px @color1;
+}
+
+#workspaces button {
+  color: @foreground;
+  padding: 0 5px;
+  transition: all 0.3s ease;
+}
+
+#workspaces button.active {
+  color: @color3; /* Pink */
+  border-bottom: 2px solid @color3;
+}
+
+#workspaces button:hover {
+  background: transparent;
+  color: @color4; /* Cyan */
+}
+
+/* Base styles for all modules */
+#group-center4, #group-center3, #group-center2,
+#custom-omarchy, #custom-active_window, #tray, #network, #bluetooth,
+#custom-gamemode, #custom-idle-indicator, #custom-notification-silencing-indicator,
+#custom-screenrecording-indicator, #custom-update, #group-media-drawer,
+#group-time-drawer, #group-sys-drawer, #battery {
+    background-color: @background;
+    border-radius: 12px;
+    padding: 2px 10px;
+    margin: 5px 3px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Cyberpunk Neon Glows */
+#custom-omarchy {
+  color: @color4; /* Cyan */
+  border-color: @color4;
+  box-shadow: 0 0 5px @color4;
+}
+
+#custom-active_window {
+  font-size: 11px;
+}
+
+#group-time-drawer {
+  color: @color3; /* Pink */
+  border-color: @color3;
+  box-shadow: 0 0 5px @color3;
+}
+
+#group-media-drawer {
+  color: @color2; /* Yellow */
+  border-color: @color2;
+  box-shadow: 0 0 5px @color2;
+}
+
+#group-sys-drawer {
+  color: @color5; /* Purple */
+  border-color: @color5;
+  box-shadow: 0 0 5px @color5;
+}
+
+#battery {
+  color: @color9; /* Orange */
+  border-color: @color9;
+}
+
+#battery.charging {
+  color: #a6e3a1; /* Green */
+  border-color: #a6e3a1;
+  box-shadow: 0 0 5px #a6e3a1;
+}
+
+#battery.critical:not(.charging) {
+  background-color: #f38ba8;
+  color: @background;
+  animation-name: blink;
+  animation-duration: 0.5s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+
+@keyframes blink {
+  to {
+    background-color: @background;
+    color: #f38ba8;
+  }
+}
+
+/* Drawer child spacing and transitions */
+.media-child, .sys-child, .time-child {
+  padding-left: 8px;
+  transition: all 0.4s ease;
+}
+
+#custom-media-icon, #custom-sys-icon {
+  font-size: 16px;
+}
+
+#custom-clock {
+  font-size: 14px;
+}
+
+#network, #bluetooth, #tray {
+  border: none;
+  box-shadow: none;
+}
+
+/* Tooltip */
+tooltip {
+  background: @background;
+  border: 1px solid @color4;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+tooltip label {
+  color: @foreground;
+}
