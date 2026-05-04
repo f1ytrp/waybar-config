@@ -7,10 +7,19 @@
     "tooltip-format": "CPU: {usage}%\nLoad: {load}"
   },
   "clock": {
-    "format": "{:%A %H:%M}",
-    "format-alt": "{:%d %B W%V %Y}",
+    "format": "{:%H:%M | %a %d %b}",
+    "format-alt": "{:%Y-%m-%d %H:%M:%S}",
     "tooltip": false,
+    "justify": "center",
     "on-click-right": "omarchy-cmd-tzupdate"
+  },
+  "group/clock-group": {
+    "orientation": "horizontal",
+    "modules": [
+      "custom/updatespacman",
+      "clock",
+      "custom/update"
+    ]
   },
   "memory": {
     "interval": 5,

@@ -1,0 +1,6 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='12' height='40'>
+  <line x1='10' y1='4' x2='10' y2='36' stroke='#0055ff' stroke-width='1' stroke-opacity='0.7'/>
+  <line x1='7' y1='8' x2='7' y2='32' stroke='#0055ff' stroke-width='0.5' stroke-opacity='0.4'/>
+  <circle cx='10' cy='4' r='1.2' fill='#00f0ff' fill-opacity='0.6'/>
+  <circle cx='10' cy='36' r='1.2' fill='#00f0ff' fill-opacity='0.6'/>
+</svg>

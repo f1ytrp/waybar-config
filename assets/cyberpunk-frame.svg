@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="40" viewBox="0 0 600 40" fill="none">
+  <defs>
+    <style>
+      .p { stroke:#ff2e88; }
+      .c { stroke:#00f7ff; }
+      .w { stroke-width:2.2; }
+      .m { stroke-width:3.2; }
+      .x { stroke-linecap:round; stroke-linejoin:round; }
+    </style>
+  </defs>
+
+  <g class="x">
+    <!-- left module -->
+    <path class="p m" d="M10 18H92L106 10H144" />
+    <path class="p m" d="M10 22H92L106 30H144" />
+    <path class="p w" d="M24 14H54" />
+    <path class="p w" d="M24 26H54" />
+    <circle class="p w" cx="68" cy="18" r="3.5" />
+    <circle class="c w" cx="82" cy="18" r="2.2" />
+    <path class="c w" d="M20 18H14" />
+    <path class="c w" d="M20 22H14" />
+
+    <!-- center frame with empty slot for date/time -->
+    <path class="p m" d="M156 8H444L458 18L444 32H156L142 18Z" />
+    <path class="p w" d="M166 12H434L442 18L434 28H166L158 18Z" opacity="0.95"/>
+
+    <!-- subtle top/bottom accents around center -->
+    <path class="c w" d="M224 10H238" />
+    <path class="c w" d="M362 10H376" />
+    <path class="c w" d="M224 30H238" />
+    <path class="c w" d="M362 30H376" />
+    <path class="p w" d="M248 8V14" />
+    <path class="p w" d="M352 8V14" />
+    <path class="p w" d="M248 26V32" />
+    <path class="p w" d="M352 26V32" />
+
+    <!-- right module -->
+    <path class="p m" d="M456 10H494L508 18L494 30H456" />
+    <path class="p m" d="M456 30H496L514 22H590" />
+    <path class="p m" d="M456 10H496L514 18H590" />
+    <path class="p w" d="M546 14H576" />
+    <path class="p w" d="M546 26H576" />
+    <circle class="p w" cx="532" cy="18" r="3.5" />
+    <circle class="c w" cx="518" cy="18" r="2.2" />
+    <path class="c w" d="M586 18H592" />
+    <path class="c w" d="M586 22H592" />
+  </g>
+</svg>

@@ -6,11 +6,11 @@
     "hyprland/window"
   ],
   "modules-center": [
-    "clock",
-    "custom/updatespacman",
-    "custom/update"
+    "clock"
   ],
   "modules-right": [
+    "custom/updatespacman",
+    "custom/update",
     "group/tray-expander",
     "network",
     "custom/gpu",
