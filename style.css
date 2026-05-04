@@ -182,14 +182,14 @@ tooltip label {
 
 /* CLOCK — primary visual anchor */
 window#waybar #clock {
-  color: @hud-magenta;
+  color: @hud-cyan;
   font-size: 15px;
   font-weight: 900;
   letter-spacing: 1px;
   padding: 0;
   margin: 0;
   min-width: 600px;
-  text-shadow: 0 0 8px @hud-magenta;
+  text-shadow: 0 0 8px @hud-cyan;
   border-bottom: none;
   animation: hud-pulse 4.5s ease-in-out infinite alternate;
 }

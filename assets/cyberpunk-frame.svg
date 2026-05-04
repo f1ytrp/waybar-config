@@ -1,15 +1,19 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="600" height="40" viewBox="0 0 600 40" fill="none">
   <defs>
     <style>
-      .p { stroke:#ff2e88; }
-      .c { stroke:#00f7ff; }
+      .p { stroke:#0055ff; }
+      .c { stroke:#00f0ff; }
       .w { stroke-width:2.2; }
       .m { stroke-width:3.2; }
       .x { stroke-linecap:round; stroke-linejoin:round; }
+      .bg { fill: #000000; }
     </style>
   </defs>
 
   <g class="x">
+    <!-- background fill -->
+    <path class="bg" d="M156 8H444L458 18L444 32H156L142 18Z" />
+
     <!-- left module -->
     <path class="p m" d="M10 18H92L106 10H144" />
     <path class="p m" d="M10 22H92L106 30H144" />
@@ -22,7 +26,6 @@
 
     <!-- center frame with empty slot for date/time -->
     <path class="p m" d="M156 8H444L458 18L444 32H156L142 18Z" />
-    <path class="p w" d="M166 12H434L442 18L434 28H166L158 18Z" opacity="0.95"/>
 
     <!-- subtle top/bottom accents around center -->
     <path class="c w" d="M224 10H238" />
