@@ -50,6 +50,4 @@ Custom scripts live in the repo root and `scripts/`. Update paths if you move th
 
 ## Screenshot
 
-Add a screenshot at `assets/screenshot.png` and update this section if you prefer a different path.
-
 ![Waybar screenshot](assets/screenshot.png)
